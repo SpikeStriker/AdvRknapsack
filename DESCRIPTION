@@ -1,17 +1,21 @@
 Package: AdvRknapsack
 Type: Package
-Title: What the Package Does (Short Line)
+Title: Solutions to Knapsack Problem Using Various Algorithms
 Version: 1.0
 Date: 2024-10-14
 Author: Nisal Amasha Rajapaksha and Uday Jain
 Maintainer: Uday Jain <uday9k@gmail.com>
-Description: More about what it does (maybe more than one line).
+Description: Provides multiple algorithms for solving the knapsack problem, including Brute-Force, Greedy, 
+    and Dynamic Programming approaches. The package includes functions to optimize the selection of items 
+    based on weight and value constraints, with options for parallel execution and performance optimizations.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
+Imports:
+    parallel
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
