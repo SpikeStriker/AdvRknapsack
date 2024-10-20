@@ -15,12 +15,12 @@
 #' 
 #' ptm <- proc.time()
 #' a<-greedy_knapsack(x = knapsack_objects[1:1000000,], W = 2000)
-#' print(proc.time() - ptm) # 6.923 milliseconds
+#' print(proc.time() - ptm) # 5.807 milliseconds
 #' print(a)
 #' 
 #' ptm <- proc.time()
 #' b<-greedy_knapsack(x = knapsack_objects[1:1000000,], W = 2000, optimised=TRUE)
-#' print(proc.time() - ptm) # 1.451 milliseconds
+#' print(proc.time() - ptm) # 0.227 milliseconds
 #' print(b)
 #' 
 #' @seealso
@@ -37,33 +37,35 @@ greedy_knapsack<- function(x, W,...){
   if(!is.null(z$optimised)){
     if(z$optimised==TRUE){
       useNonOptimised=FALSE
-      x$ratio<-x$v/x$w
-      x<-x[order(-x$ratio), ]
-      value <- 0
-      totalWeight <- 0
-      elements<-integer(0)
-      for(i in 1:nrow(x)) {
-        if(totalWeight+x$w[i]<=W) {
-          value<- value+x$v[i]
-          totalWeight<- totalWeight+x$w[i]
-          elements<- c(elements,rownames(x[i,]))
-        }
-      }
       
+      x$ratio<-x$v/x$w
+      x<-x[x$w<=W,]
+      x<-x[order(x$ratio,decreasing=TRUE), ]
+      value <- x$v[1]
+      totalWeight <- x$w[1]
+      elements<-integer(0)
+      i<-1
+      while ((totalWeight+x$w[i+1]<=W)&(i<nrow(x))) {
+        value<- value+x$v[i+1]
+        totalWeight<- totalWeight+x$w[i+1]
+        elements<- c(elements,as.numeric(rownames(x[i+1,])))
+        i<-i+1
+      }
     }
   }
   if(useNonOptimised){
     x$ratio<-x$v/x$w
-    y<-x[order(-x$ratio), ]
-    value <- 0
-    totalWeight <- 0
+    y<-x[which(x$w<=W),]
+    y<-y[order(y$ratio,decreasing=TRUE), ]
+    value <- y$v[1]
+    totalWeight <- y$w[1]
     elements<-integer(0)
-    for(i in 1:nrow(y)) {
-      if(totalWeight+y$w[i]<=W) {
-        value<- value+y$v[i]
-        totalWeight<- totalWeight+y$w[i]
-        elements<- c(elements,which((x$w==y$w[i])&(x$v==y$v[i])))
-      }
+    i<-1
+    while ((totalWeight+y$w[i+1]<=W)&(i<nrow(y))) {
+      value<- value+y$v[i+1]
+      totalWeight<- totalWeight+y$w[i+1]
+      elements<- c(elements,which((x$w==y$w[i+1])&(x$v==y$v[i+1])))
+      i<-i+1
     }
   }
   return(list(value=value,elements=elements))

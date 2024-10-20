@@ -27,12 +27,12 @@ knapsack_objects<-data.frame(w=sample(1:4000,size=1000000,replace=TRUE),v=runif(
 
 ptm <- proc.time()
 a<-greedy_knapsack(x = knapsack_objects[1:1000000,], W = 2000)
-print(proc.time() - ptm) # 6.923 milliseconds
+print(proc.time() - ptm) # 5.807 milliseconds
 print(a)
 
 ptm <- proc.time()
 b<-greedy_knapsack(x = knapsack_objects[1:1000000,], W = 2000, optimised=TRUE)
-print(proc.time() - ptm) # 1.451 milliseconds
+print(proc.time() - ptm) # 0.227 milliseconds
 print(b)
 
 }
