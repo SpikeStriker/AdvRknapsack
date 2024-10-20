@@ -1,7 +1,9 @@
 
 ---
 title: "lab_report_knapsack"
-output: rmarkdown::html_vignette
+output:
+  pdf_document: 
+    latex_engine: pdflatex
 vignette: >
   %\VignetteIndexEntry{lab_report_knapsack}
   %\VignetteEngine{knitr::rmarkdown}
@@ -32,24 +34,30 @@ The brute-force approach attempts every possible combination of items to find th
 ```{r brute_force_example}
 # Prepare Data
 set.seed(42)
-knapsack_objects <- data.frame(w = sample(1:4000, size = 2000, replace = TRUE), v = runif(n = 2000, 0, 10000))
+knapsack_objects <- data.frame(w = sample(1:4000, size = 1000000, replace = TRUE), v = runif(n = 1000000, min = 0, max = 10000))
 
 # Run Brute-Force Knapsack
-result <- brute_force_knapsack(x = knapsack_objects[1:16, ], W = 2000)
+result <- brute_force_knapsack(x = knapsack_objects[1:8, ], W = 3500)
+print(result)
+result <- brute_force_knapsack(x = knapsack_objects[1:12, ], W = 3500)
+print(result)
+result <- brute_force_knapsack(x = knapsack_objects[1:8, ], W = 2000)
+print(result)
+result <- brute_force_knapsack(x = knapsack_objects[1:12, ], W = 2000)
 print(result)
 ```
+```{r brute_force_timing}
+# Measure execution time for brute-force knapsack
+time_taken <- system.time({
+  result <- brute_force_knapsack(x = knapsack_objects[1:16, ], W = 2000)
+})
 
-## Greedy Approach
-
-The greedy algorithm sorts items based on their value-to-weight ratio and picks the best option. While fast, it does not always yield the optimal solution.
-
-### Usage
-
-```{r greedy_example}
-# Run Greedy Knapsack
-result <- greedy_knapsack(x = knapsack_objects[1:100, ], W = 2000)
+# Display the results
 print(result)
+print(time_taken)
 ```
+**How much time does it takes to run the algorithm for n = 16 objects?**  
+Time taken: `r time_taken[3]` seconds
 
 ## Dynamic Programming Approach
 
@@ -63,13 +71,58 @@ result <- knapsack_dynamic(x = knapsack_objects[1:500, ], W = 2000)
 print(result)
 ```
 
+```{r dynamic_timing}
+# Measure execution time for Greedy Approach
+time_taken <- system.time({
+  result <- knapsack_dynamic(x = knapsack_objects[1:500, ], W = 2000)
+})
+
+print(result)
+print(time_taken)
+```
+**How much time does it takes to run the algorithm for n = 500 objects?**  
+Time taken: `r time_taken[3]` seconds
+
+
+
+## Greedy Approach
+
+The greedy algorithm sorts items based on their value-to-weight ratio and picks the best option. While fast, it does not always yield the optimal solution.
+
+### Usage
+
+```{r greedy_example}
+# Run Greedy Knapsack
+result <- greedy_knapsack(x = knapsack_objects[1:800, ], W = 3500)
+print(result)
+
+result <- greedy_knapsack(x = knapsack_objects[1:1200, ], W = 2000)
+print(result)
+```
+
+```{r greedy_timing}
+# Measure execution time for Greedy Approach
+time_taken <- system.time({
+  result <- greedy_knapsack(x = knapsack_objects[1:1000000, ], W = 2000)
+})
+
+print(result)
+print(time_taken)
+```
+**How much time does it takes to run the algorithm for n = 1000000 objects?**  
+Time taken: `r time_taken[3]` seconds
+
+
+
+
 ## Comparing the Methods
 
 The choice of algorithm depends on the problem size and requirements:
 
 - **Brute-Force**: Suitable for small datasets where exact results are required.
-- **Greedy**: Good for larger datasets when a near-optimal solution suffices.
 - **Dynamic Programming**: Ideal for medium-sized datasets where an optimal solution is desired with reasonable computational effort.
+- **Greedy**: Good for larger datasets when a near-optimal solution suffices.
+
 
 ## Conclusion
 
