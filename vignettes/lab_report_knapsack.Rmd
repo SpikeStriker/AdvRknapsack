@@ -191,3 +191,18 @@ The choice of algorithm depends on the problem size and requirements:
 ## Conclusion
 
 The `AdvRknapsack` package provides flexible options for solving the knapsack problem using different algorithms, catering to various performance needs and dataset sizes.
+
+## Steps to develop a package:
+
+1. We used package.skeleton(name="AdvRknapsack",path="./Assignment6/",force = TRUE,code_files=c("./Assignment6/brute_force_knapsack.R","./Assignment6/knapsack_dynamic.R","./Assignment6/greedy_knapsack.R"))
+t create a repository structure
+2. Created project using R UI
+3. Configure build settings to use roxygen2 and vignettes
+4. usethis::use_package("AdvRknapsack") to incorporate any dependencies in description
+5. usethis::use_mit_license() to add license in description
+6. usethis::use_github_action() and manually add badge to README.md to run git action tests
+7. update documentation (Encoding: UTF-8) 
+8. usethis::use_testthat() to add tests
+9. devtools::document() to build documentation
+10. usethis::use_vignette("lab_report_knapsack") to create repository structure and skeleton files for vignettes
+11. devtools::build_vignettes() to build vignettes
