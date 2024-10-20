@@ -1,7 +1,7 @@
 
 ---
 title: "lab_report_knapsack"
-output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{lab_report_knapsack}
   %\VignetteEngine{knitr::rmarkdown}
@@ -21,39 +21,52 @@ library(AdvRknapsack)
 
 # Introduction
 
-This vignette provides a comprehensive overview of the `AdvRknapsack` package, which offers solutions to the classic knapsack problem using three different algorithms: Brute-Force, Greedy, and Dynamic Programming. Each approach has its own strengths and trade-offs, depending on the size and nature of the input data.
+This vignette provides a comprehensive overview of the `AdvRknapsack` package, 
+which offers solutions to the classic knapsack problem using three different 
+algorithms: Brute-Force, Greedy, and Dynamic Programming. Each approach has its 
+own strengths and trade-offs, depending on the size and nature of the input data.
+
+```{r dataPreparation}
+# Setting Seed
+suppressWarnings(RNGversion(min(as.character(getRversion()),"3.5.3")))
+set.seed(42, kind = "Mersenne-Twister", normal.kind = "Inversion")
+n<-1100000
+# Prepare Data
+knapsack_objects <- data.frame(w = sample(1:4000, size = n, replace = TRUE), 
+                               v = runif(n = n, 0, 10000))
+
+```
 
 ## Brute-Force Approach
 
-The brute-force approach attempts every possible combination of items to find the optimal solution. While this guarantees the best solution, it is computationally expensive, especially for larger datasets.
+The brute-force approach attempts every possible combination of items to find 
+the optimal solution. While this guarantees the best solution, it is 
+computationally expensive, especially for larger datasets.
 
 ### Usage
 
 ```{r brute_force_example}
-# Prepare Data
-set.seed(42)
-knapsack_objects <- data.frame(w = sample(1:4000, size = 2000, replace = TRUE), v = runif(n = 2000, 0, 10000))
-
 # Run Brute-Force Knapsack
 result <- brute_force_knapsack(x = knapsack_objects[1:16, ], W = 2000)
 print(result)
 ```
 
-## Greedy Approach
+### Question
 
-The greedy algorithm sorts items based on their value-to-weight ratio and picks the best option. While fast, it does not always yield the optimal solution.
+How much time does it takes to run the algorithm for n = 16 objects?
 
-### Usage
+```{r brute_force_question,echo=FALSE}
 
-```{r greedy_example}
-# Run Greedy Knapsack
-result <- greedy_knapsack(x = knapsack_objects[1:100, ], W = 2000)
-print(result)
+ptm <- proc.time()
+result <- brute_force_knapsack(x = knapsack_objects[1:16, ], W = 2000)
+print(paste("It took",round((proc.time() - ptm)[[1]],3),"milliseconds to run Knapsack for 16 objects using Brute-Force Algorithm"))
+print("Note: it took 0.417 millisecods when running on local machine")
 ```
 
 ## Dynamic Programming Approach
 
-Dynamic programming breaks the problem into smaller sub-problems and builds up the solution iteratively. It guarantees an optimal solution with improved efficiency over brute-force.
+Dynamic programming breaks the problem into smaller sub-problems and builds up the solution iteratively. It guarantees an optimal solution with improved efficiency over brute-force since the algorithm will 
+run in O(W n)
 
 ### Usage
 
@@ -63,13 +76,117 @@ result <- knapsack_dynamic(x = knapsack_objects[1:500, ], W = 2000)
 print(result)
 ```
 
+
+### Question
+
+How much time does it takes to run the algorithm for n = 500 objects?
+
+```{r dynamic_question,echo=FALSE}
+
+ptm <- proc.time()
+result <- knapsack_dynamic(x = knapsack_objects[1:500, ], W = 2000)
+print(paste("It took",round((proc.time() - ptm)[[1]],3),"milliseconds to run Knapsack for 500 objects using Dynamic Algorithm"))
+print("Note: it took 1.923 millisecods when running on local machine")
+```
+
+## Greedy Approach
+
+The greedy algorithm sorts items based on their value-to-weight ratio and
+picks the best option. While fast, it does not always yield the optimal solution.
+
+### Usage
+
+```{r greedy_example}
+# Run Greedy Knapsack
+result <- greedy_knapsack(x = knapsack_objects[1:100, ], W = 2000)
+print(result)
+```
+
+
+### Question
+
+How much time does it takes to run the algorithm for n = 1000000 objects?
+
+```{r greedy_question,echo=FALSE}
+
+ptm <- proc.time()
+result <- greedy_knapsack(x = knapsack_objects[1:1000000, ], W = 2000)
+print(paste("It took",round((proc.time() - ptm)[[1]],3),"milliseconds to run Knapsack for 1000000 objects using Greedy Algorithm"))
+print("Note: it took 5.356 millisecods when running on local machine")
+```
+## Code Optmisations
+
+### Code Optmisation using profvis
+
+We used package profvis to profile our code and optimise bottlenecks to improve execution speed for Greedy Algorithm.
+During optmisation we found use of "which" function was consuming the most processing time. Identifying an alternative and optimising the code accordingly helped us achieve ~97% reduction in runtime.
+
+```{r greedy_optimisation_question,echo=TRUE,eval=FALSE}
+
+library(profvis)
+p<-profvis::profvis({
+  a<-greedy_knapsack(x = knapsack_objects[1:1000000,], W = 2000)
+})
+print(p)
+
+#After Optimisation:
+p<-profvis::profvis({
+  a<-greedy_knapsack(x = knapsack_objects[1:1000000,], W = 2000, optimised=TRUE)
+})
+print(p)
+
+```
+
+### Question
+
+What performance gain could you get by trying to improving your code?
+
+```{r greedy_post_optimisation_question,echo=FALSE}
+
+ptm <- proc.time()
+result <- greedy_knapsack(x=knapsack_objects[1:1000000,], W=2000, optimised=TRUE)
+cat('It took',round((proc.time() - ptm)[[1]],3),'milliseconds to run Knapsack for 1000000 objects using Greedy Algorithm \npost optimisation')
+
+cat("Note:\nIt took 0.199 millisecods when running on local machine.\nThis shows approximately 97% reduction in run time")
+
+```
+
+### Code Optmisation using parallelize
+
+We used parLapply within our code for parallel execution of Brute-Force Algorithm. This function takes the advantage of parallel processing in a multi-core system.
+
+```{r brute_force_parallel_example}
+# Run Brute-Force Knapsack
+result<-brute_force_knapsack(x=knapsack_objects[1:16,],W=2000,parallel=TRUE)
+print(result)
+```
+
+Note: The implementation is platform dependent and only works with MacOS/Linux or Windows.
+
+During optmisation we parallelised the "for loop", evaluating all combinations in parallel chunks and helping us achieve ~94% reduction in runtime.
+
+### Question
+
+What performance gain could you get by trying to improving your code?
+
+```{r brute_force_post_optimisation_question,echo=FALSE}
+
+ptm <- proc.time()
+result<-brute_force_knapsack(x=knapsack_objects[1:16,],W=2000,parallel=TRUE)
+cat('It took',round((proc.time() - ptm)[[1]],3),'milliseconds to run Knapsack for 16 objects using Brute-Force \npost optimisation')
+
+cat("Note:\nIt took 0.026 millisecods when running on local machine.\nThis shows approximately 93.7% reduction in run time")
+
+```
+
+
 ## Comparing the Methods
 
 The choice of algorithm depends on the problem size and requirements:
 
 - **Brute-Force**: Suitable for small datasets where exact results are required.
-- **Greedy**: Good for larger datasets when a near-optimal solution suffices.
 - **Dynamic Programming**: Ideal for medium-sized datasets where an optimal solution is desired with reasonable computational effort.
+- **Greedy**: Good for larger datasets when a near-optimal solution suffices.
 
 ## Conclusion
 
