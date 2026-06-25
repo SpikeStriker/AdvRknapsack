@@ -1,13 +1,27 @@
-<!-- badges: start -->
-
-  [![R-CMD-check](https://github.com/SpikeStriker/AdvRknapsack/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SpikeStriker/AdvRknapsack/actions/workflows/R-CMD-check.yaml)
-
-<!-- badges: end -->
-
 # AdvRknapsack
 
-# 732A94 Advance R
+## Repository Summary
+R package or R Shiny application repository focused on statistical modelling and API integration
+with full package structure. Contains top-level folders: .github, R, man, tests, vignettes. Captures
+dependency and environment requirements for reproducibility. Existing README or documentation is
+present; this update improves the project summary and structure description.
 
-## Group 13: Uday Jain (udaja983) & Nisal Amasha Rajapaksha (nisra674)
+## Key Contents
+### Directories
+- `.github`
+- `R`
+- `man`
+- `tests`
+- `vignettes`
 
-### Assignment 6: Knapsack
+### Files
+- `.Rbuildignore`
+- `.gitignore`
+- `AdvRknapsack.Rproj`
+- `DESCRIPTION`
+- `LICENSE`
+- `LICENSE.md`
+- `NAMESPACE`
+
+## Usage
+- Build or install the R package using the `DESCRIPTION` metadata.
